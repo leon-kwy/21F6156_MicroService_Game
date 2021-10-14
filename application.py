@@ -13,15 +13,15 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-app = Flask(__name__)
-CORS(app)
+application = Flask(__name__)
+CORS(application)
 
 
-@app.route('/')
+@application.route('/')
 def hello_world():
     return '<u>Hello World!</u>'
 
-@app.route('/Game', methods=['GET', 'POST'])
+@application.route('/Game', methods=['GET', 'POST'])
 def get_game():
     if request.method == 'GET':
         res = GameResource.find_by_template(None)
@@ -50,7 +50,7 @@ def get_game():
         resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
         return resp
 
-@app.route('/Game/<game_id>', methods = ['GET', 'DELETE'])
+@application.route('/Game/<game_id>', methods = ['GET', 'DELETE'])
 def get_game_by_id(game_id):
     if request.method == 'GET':
         template = {"Game_id": game_id}
@@ -63,7 +63,7 @@ def get_game_by_id(game_id):
         resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
         return resp
 
-@app.route('/game_type/<type>', methods = ['GET'])
+@application.route('/game_type/<type>', methods = ['GET'])
 def get_game_by_type(type):
     if request.method == 'GET':
         print(type)
@@ -72,7 +72,7 @@ def get_game_by_type(type):
         resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
         return resp
 
-@app.route('/game_dev/<dev>', methods = ['GET'])
+@application.route('/game_dev/<dev>', methods = ['GET'])
 def get_game_by_dev(dev):
     if request.method == 'GET':
         print(dev)
@@ -83,4 +83,4 @@ def get_game_by_dev(dev):
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
+    application.run(host="0.0.0.0", port=5000)
