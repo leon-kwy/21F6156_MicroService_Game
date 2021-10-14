@@ -24,8 +24,8 @@ def get_db_info():
     else:
         db_info = {
             "host": "localhost",
-            "user": "root",
-            "password": "kwy970523",
+            "user": "teamnamenotfound",
+            "password": "teamnamenotfound6156",
             "cursorclass": pymysql.cursors.DictCursor
         }
 
