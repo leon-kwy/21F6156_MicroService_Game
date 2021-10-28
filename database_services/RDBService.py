@@ -97,6 +97,7 @@ class RDBService:
 
         return res
 
+
     @classmethod
     def find_by_dev(cls, db_schema, table_name, template):
 

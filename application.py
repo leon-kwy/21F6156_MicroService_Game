@@ -19,16 +19,23 @@ CORS(application)
 
 @application.route('/')
 def hello_world():
-    return '<u>Hello World!</u>'
+   return '<u>Hello World!</u>'
+
 
 @application.route('/Game', methods=['GET', 'POST'])
 def get_game():
     if request.method == 'GET':
         res = GameResource.find_by_template(None)
-        resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
+        if (res):
+            resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
+            return resp
+        else:
+            resp = Response(json.dumps('404 Not Found: No Games Available Now.', default=str), status=404,
+                            content_type="application/json")
+            return resp
         return  resp
     if request.method == 'POST':
-        id = request.form['id']
+        id = None
         game_name = request.form['name']
         type1 = request.form['type1']
         type2 = request.form['type2']
@@ -36,7 +43,8 @@ def get_game():
         type4 = request.form['type4']
         type5 = request.form['type5']
         dev = request.form['dev']
-        create_data = {
+        if(len(game_name) & len(type1) & len(type2) & len(type3) & len(type4) & len(type5) & len(dev)):
+            create_data = {
             "Game_id": id,
             "Game_name": game_name,
             "Type1": type1,
@@ -46,40 +54,95 @@ def get_game():
             "Type5": type5,
             "DEVELOPER": dev
         }
-        res = GameResource.create(create_data)
-        resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
-        return resp
+            res = GameResource.create(create_data)
+            ans = GameResource.find_by_template({"Game_name": game_name})
+            ans = ans[len(ans) - 1]['Game_id']
 
-@application.route('/Game/<game_id>', methods = ['GET', 'DELETE'])
+            succ = 'Created ' + str(create_data) + ' with ID ' + str(ans)
+            # print(request.content)
+            resp = Response(json.dumps(succ, default=str), status=201, content_type="application/json")
+        else:
+            resp = Response(json.dumps('Status Code: 400 Bad Data', default=str), status=400, content_type="application/json")
+
+            return resp
+
+@application.route('/Game/id/<game_id>', methods = ['GET', 'DELETE'])
 def get_game_by_id(game_id):
     if request.method == 'GET':
         template = {"Game_id": game_id}
         res = GameResource.find_by_template(template)
-        resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
-        return resp
+        if(res):
+            resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
+            return resp
+        else:
+            resp = Response(json.dumps('404 Not Found: No such games.', default = str), status=404,
+                            content_type="application/json" )
+            return resp
     elif request.method == 'DELETE':
         template = {"Game_id": game_id}
         res = GameResource.delete(template)
-        resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
-        return resp
+        if(res):
+            resp = Response(json.dumps('Status Code: 204 Delete Successfully', default=str),
+                            status=200, content_type="application/json")
+            return resp
+        else:
+            resp = Response(json.dumps('Status Code: 400 Bad Data', default=str), status=200, content_type="application/json")
+            return resp
 
-@application.route('/game_type/<type>', methods = ['GET'])
+
+@application.route('/Game/name/<name>', methods = ['GET', 'DELETE'])
+def get_game_by_name(name):
+    if request.method == 'GET':
+        template = {"Game_name": name}
+        res = GameResource.find_by_template(template)
+        if(res):
+            resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
+            return resp
+        else:
+            resp = Response(json.dumps('404 Not Found: No such games.', default = str), status=404,
+                            content_type="application/json" )
+            return resp
+    elif request.method == 'DELETE':
+        template = {"Game_name": name}
+        res = GameResource.delete(template)
+        if (res):
+            resp = Response(json.dumps('Status Code: 204 Delete Successfully', default=str),
+                            status=200, content_type="application/json")
+            return resp
+        else:
+            resp = Response(json.dumps('Status Code: 400 Bad Data', default=str), status=200,
+                            content_type="application/json")
+            return resp
+
+
+@application.route('/Game/type/<type>', methods = ['GET'])
 def get_game_by_type(type):
     if request.method == 'GET':
         print(type)
         template = type
         res = GameResource.find_by_type(template)
-        resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
-        return resp
 
-@application.route('/game_dev/<dev>', methods = ['GET'])
+        if (res):
+            resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
+            return resp
+        else:
+            resp = Response(json.dumps('404 Not Found: No such games.', default=str), status=404,
+                            content_type="application/json")
+            return resp
+
+@application.route('/Game/dev/<dev>', methods = ['GET'])
 def get_game_by_dev(dev):
     if request.method == 'GET':
         print(dev)
         template = dev
         res = GameResource.find_by_dev(template)
-        resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
-        return resp
+        if (res):
+            resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
+            return resp
+        else:
+            resp = Response(json.dumps('404 Not Found: No such games.', default=str), status=404,
+                            content_type="application/json")
+            return resp
 
 
 if __name__ == '__main__':
