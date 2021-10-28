@@ -84,12 +84,13 @@ class RDBService:
         return clause, args
 
     @classmethod
-    def find_by_type(cls, db_schema, table_name, template):
+    def find_by_type(cls, db_schema, table_name, template, limit, offset):
 
         conn = RDBService._get_db_connection()
         cur = conn.cursor()
         sql = "select * from " + db_schema + "." + table_name +  " where " + \
-            "type1 = '{0}' or type2 = '{0}' or type3 = '{0}' or type4 = '{0}' or type5 = '{0}'".format(template)
+            "type1 = '{0}' or type2 = '{0}' or type3 = '{0}' or type4 = '{0}' or type5 = '{0}'".format(template)\
+                 + " " + "limit " + str(limit) + " " + "offset " + str(offset)
         print(sql)
         res = cur.execute(sql)
         res = cur.fetchall()
@@ -98,12 +99,13 @@ class RDBService:
         return res
 
     @classmethod
-    def find_by_dev(cls, db_schema, table_name, template):
+    def find_by_dev(cls, db_schema, table_name, template, limit, offset):
 
         conn = RDBService._get_db_connection()
         cur = conn.cursor()
         sql = "select * from " + db_schema + "." + table_name + " where " + \
-              "developer = '{0}'".format(template)
+              "developer = '{0}'".format(template) + " " + "limit " + str(limit) \
+                  + " " + "offset " + str(offset)
         print(sql)
         res = cur.execute(sql)
         res = cur.fetchall()
@@ -112,14 +114,15 @@ class RDBService:
         return res
 
     @classmethod
-    def find_by_template(cls, db_schema, table_name, template):
+    def find_by_template(cls, db_schema, table_name, template, limit, offset):
 
         wc,args = RDBService._get_where_clause_args(template)
 
         conn = RDBService._get_db_connection()
         cur = conn.cursor()
 
-        sql = "select * from " + db_schema + "." + table_name + " " + wc
+        sql = "select * from " + db_schema + "." + table_name + " " + wc + " " + \
+            "limit " + str(limit) + " " + "offset " + str(offset)
         res = cur.execute(sql, args=args)
         res = cur.fetchall()
 
