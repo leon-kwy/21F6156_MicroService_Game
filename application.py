@@ -24,9 +24,24 @@ def hello_world():
 @application.route('/Game', methods=['GET', 'POST'])
 def get_game():
     if request.method == 'GET':
-        res = GameResource.find_by_template(None)
+#         res = GameResource.find_by_template(None)
+#         resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
+#         return  resp
+# /Game?game_id=1&game_name=Mario&fields=type1,type2
+        game_id = request.args.get("game_id")
+        game_name = request.args.get("game_name")
+        developer = request.args.get("developer")
+        fields = request.args.get("fields")
+        template = {}
+        if game_id:
+            template['Game_id'] = game_id
+        if game_name:
+            template['Game_name'] = game_name
+        if developer:
+            template['DEVELOPER'] = developer
+        res = GameResource.find_by_template_fields(fields, template)
         resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
-        return  resp
+        return resp
     if request.method == 'POST':
         id = request.form['id']
         game_name = request.form['name']
