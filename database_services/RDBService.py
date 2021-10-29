@@ -127,6 +127,24 @@ class RDBService:
 
         return res
 
+    
+    @classmethod
+    def find_by_template_fields(cls, db_schema, table_name, fields,template):
+
+        wc, args = RDBService._get_where_clause_args(template)
+        conn = RDBService._get_db_connection()
+        cur = conn.cursor()
+        if fields:
+            sql = "select " + fields +" from " + db_schema + "." + table_name + wc
+        else:
+            sql = "select * from " + db_schema + "." + table_name + wc
+        print(sql)
+        res = cur.execute(sql, args=args)
+        res = cur.fetchall()
+        conn.close()
+
+        return res
+    
     @classmethod
     def create(cls, db_schema, table_name, create_data):
 
