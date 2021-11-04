@@ -43,7 +43,9 @@ def get_game():
         type4 = request.form['type4']
         type5 = request.form['type5']
         dev = request.form['dev']
-        if(len(game_name) & len(type1) & len(type2) & len(type3) & len(type4) & len(type5) & len(dev)):
+        if(len(game_name) != 0 and len(type1) != 0 and len(type2) != 0 and len(type3) != 0 and len(type4) != 0 and
+                len(type5) != 0 and len(dev) != 0):
+
             create_data = {
             "Game_id": id,
             "Game_name": game_name,
@@ -55,6 +57,7 @@ def get_game():
             "DEVELOPER": dev
         }
             res = GameResource.create(create_data)
+            print(res)
             ans = GameResource.find_by_template({"Game_name": game_name})
             ans = ans[len(ans) - 1]['Game_id']
 
