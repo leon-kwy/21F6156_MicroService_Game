@@ -13,8 +13,8 @@ class GameResource(BaseRDBApplicationResource):
         pass
 
     @classmethod
-    def find_by_template(cls, template):
-        res = RDBService.find_by_template("GameInfo", "Game", template)
+    def find_by_template(cls, template, limit, offset):
+        res = RDBService.find_by_template("GameInfo", "Game", template, limit, offset)
         return res
 
     @classmethod
@@ -33,12 +33,12 @@ class GameResource(BaseRDBApplicationResource):
         return res
 
     @classmethod
-    def find_by_type(cls, template):
-        res = RDBService.find_by_type("GameInfo", "Game", template)
+    def find_by_type(cls, template, limit, offset):
+        res = RDBService.find_by_type("GameInfo", "Game", template, limit, offset)
         return res
 
     @classmethod
-    def find_by_dev(cls, template):
-        res = RDBService.find_by_dev("GameInfo", "Game", template)
+    def find_by_dev(cls, template, limit, offset):
+        res = RDBService.find_by_dev("GameInfo", "Game", template, limit, offset)
         return res
 

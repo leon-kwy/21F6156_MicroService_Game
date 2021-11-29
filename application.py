@@ -2,7 +2,7 @@ from flask import Flask, Response, request
 from flask_cors import CORS
 import json
 import logging
-
+import re
 
 from application_services.GameResource.game_service import GameResource
 
@@ -12,6 +12,27 @@ logging.basicConfig(level=logging.DEBUG)
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+# pagination data
+OFFSET = 0
+MAXLIMIT = 20
+
+# help function for pagination
+def handle_links(url, offset, limit):
+    if "?" not in url:
+        url += "?offset=" +str(offset)+"&limit=" +str(limit)
+    else:
+        if "offset" not in url:
+            url = url + "&offset=" +str(offset)
+        if "limit" not in url:
+            url = url +"&limit=" +str(limit)
+    links = []
+    nexturl = re.sub("offset=\d+","offset="+str(offset+limit), url)
+    prevurl = re.sub("offset=\d+","offset="+str(max(0,offset-limit)), url)
+    links.append({"rel":"self","href":url})
+    links.append({"rel":"next","href":nexturl})
+    links.append({"rel":"prev","href":prevurl})
+    return links
 
 application = Flask(__name__)
 CORS(application)
@@ -24,7 +45,13 @@ def hello_world():
 @application.route('/Game', methods=['GET', 'POST'])
 def get_game():
     if request.method == 'GET':
-        res = GameResource.find_by_template(None)
+        offset = int(request.args.get("offset", OFFSET))
+        limit = int(request.args.get("limit", MAXLIMIT))
+        if limit > MAXLIMIT:
+            limit = MAXLIMIT
+        data = GameResource.find_by_template(None, limit, offset)
+        links = handle_links(request.url, offset, limit)
+        res ={"data":data,"links":links}
         resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
         return  resp
     if request.method == 'POST':
@@ -68,7 +95,13 @@ def get_game_by_type(type):
     if request.method == 'GET':
         print(type)
         template = type
-        res = GameResource.find_by_type(template)
+        offset = int(request.args.get("offset", OFFSET))
+        limit = int(request.args.get("limit", MAXLIMIT))
+        if limit > MAXLIMIT:
+            limit = MAXLIMIT
+        data = GameResource.find_by_type(template, limit, offset)
+        links = handle_links(request.url, offset, limit)
+        res ={"data":data,"links":links}
         resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
         return resp
 
@@ -77,7 +110,13 @@ def get_game_by_dev(dev):
     if request.method == 'GET':
         print(dev)
         template = dev
-        res = GameResource.find_by_dev(template)
+        offset = int(request.args.get("offset", OFFSET))
+        limit = int(request.args.get("limit", MAXLIMIT))
+        if limit > MAXLIMIT:
+            limit = MAXLIMIT
+        data = GameResource.find_by_dev(template, limit, offset)
+        links = handle_links(request.url, offset, limit)
+        res ={"data":data,"links":links}
         resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
         return resp
 
