@@ -81,7 +81,11 @@ def get_game():
 def get_game_by_id(game_id):
     if request.method == 'GET':
         template = {"Game_id": game_id}
-        res = GameResource.find_by_template(template)
+        offset = int(request.args.get("offset", OFFSET))
+        limit = int(request.args.get("limit", MAXLIMIT))
+        if limit > MAXLIMIT:
+            limit = MAXLIMIT
+        res = GameResource.find_by_template(template, limit, offset)
         resp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
         return resp
     elif request.method == 'DELETE':
