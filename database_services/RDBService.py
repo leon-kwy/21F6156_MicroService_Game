@@ -18,8 +18,8 @@ from botocore.exceptions import ClientError
 # logger = logging.getLogger()
 # logger.setLevel(logging.INFO)
 
-aws_access_key_id = 'AKIATDPZNBACCQGFSCOV'
-aws_secret_access_key = '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'
+aws_access_key_id = 
+aws_secret_access_key = 
 dynamodb = boto3.resource(
     service_name='dynamodb',
     region_name='us-east-2',
