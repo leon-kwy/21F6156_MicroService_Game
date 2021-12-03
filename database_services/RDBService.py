@@ -15,8 +15,6 @@ from boto3.dynamodb.conditions import Key, Attr, And
 from botocore.exceptions import ClientError
 
 
-
-
 dynamodb = boto3.resource(
     service_name='dynamodb',
     region_name='us-east-2',

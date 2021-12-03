@@ -79,7 +79,6 @@ def get_game():
             }
             res = GameResource.create(create_data)
             print(res)
-
             succ = 'Created ' + str(create_data) + ' with ID ' + str(id)
             resp = Response(json.dumps(succ, default=str), status=201, content_type="application/json")
 
