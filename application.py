@@ -81,7 +81,6 @@ def get_game():
             print(res)
 
             succ = 'Created ' + str(create_data) + ' with ID ' + str(id)
-            # print(request.content)
             resp = Response(json.dumps(succ, default=str), status=201, content_type="application/json")
 
         else:

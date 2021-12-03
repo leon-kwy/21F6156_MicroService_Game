@@ -14,9 +14,7 @@ import botocore
 from boto3.dynamodb.conditions import Key, Attr, And
 from botocore.exceptions import ClientError
 
-# logging.basicConfig(level=logging.DEBUG)
-# logger = logging.getLogger()
-# logger.setLevel(logging.INFO)
+
 
 
 dynamodb = boto3.resource(
