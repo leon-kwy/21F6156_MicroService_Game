@@ -14,7 +14,7 @@ class GameResource(BaseRDBApplicationResource):
 
     @classmethod
     def find_by_template(cls, template, limit, offset):
-        res = RDBService.find_by_template("GameInfo", "Game", template, limit, offset)
+        res = RDBService.find_by_template(template, limit, offset)
         return res
 
     @classmethod

@@ -11,15 +11,16 @@ import decimal
 import time
 
 import botocore
-from boto3.dynamodb.conditions import Key, Attr
+from boto3.dynamodb.conditions import Key, Attr, And
 from botocore.exceptions import ClientError
 
 # logging.basicConfig(level=logging.DEBUG)
 # logger = logging.getLogger()
 # logger.setLevel(logging.INFO)
 
-aws_access_key_id = 
-aws_secret_access_key = 
+aws_access_key_id = 'AKIATDPZNBACAS7FZREM'
+aws_secret_access_key = '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'
+
 dynamodb = boto3.resource(
     service_name='dynamodb',
     region_name='us-east-2',
@@ -134,7 +135,7 @@ class RDBService:
     #     return res
 
     @classmethod
-    def find_by_template(cls, db_schema, table_name, template, limit, offset):
+    def find_by_template(cls, template, limit, offset):
 
         # wc,args = RDBService._get_where_clause_args(template)
 
@@ -149,14 +150,40 @@ class RDBService:
         # conn.close()
 
         # return res
+        res = []
         try:
-            response = table.scan(
-                FilterExpression=And(*[(Key(key).eq(value)) for key, value in template.items()])
-            )
+            if template is None:
+                res = table.scan()['Items']
+            else:
+                # response = table.scan(
+                #     FilterExpression=And(*[(Key(key).eq(value)) for key, value in template.items()])
+                # )
+
+                for k,v in template.items():
+                    if k == 'id':
+                        response = table.scan(
+                            FilterExpression=Attr(k).eq(int(v))
+                        )
+                    elif k == 'G_Type':
+                        if len(template['G_Type']) > 1:
+                            response = table.scan(
+                                FilterExpression=And(*[(Attr('G_Type').contains(value)) for value in template['G_Type']])
+                            )
+                        else:
+                            response = table.scan(
+                                FilterExpression=Attr(k).contains(template['G_Type'][0])
+                            )
+                    else:
+                        response = table.scan(
+                            FilterExpression=Attr(k).eq(v)
+                        )
+                    # print(type(v),v)
+                    # print(response)
+                    res += response['Items']
         except ClientError as e:
             raise
         else:
-            return response['Items']
+            return res
 
 
     @classmethod

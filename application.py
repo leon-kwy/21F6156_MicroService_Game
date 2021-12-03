@@ -99,7 +99,7 @@ def get_game():
 @application.route('/Game/id/<game_id>', methods = ['GET', 'DELETE'])
 def get_game_by_id(game_id):
     if request.method == 'GET':
-        template = {"Game_id": game_id}
+        template = {"id": game_id}
         offset = int(request.args.get("offset", OFFSET))
         limit = int(request.args.get("limit", MAXLIMIT))
         if limit > MAXLIMIT:
@@ -156,13 +156,15 @@ def get_game_by_name(name):
 @application.route('/Game/type/<type>', methods = ['GET'])
 def get_game_by_type(type):
     if request.method == 'GET':
-        print(type)
-        template = type
+        Type = []
+        Type += type.split(',')
+        template = {'G_Type': Type}
+        print(template)
         offset = int(request.args.get("offset", OFFSET))
         limit = int(request.args.get("limit", MAXLIMIT))
         if limit > MAXLIMIT:
             limit = MAXLIMIT
-        data = GameResource.find_by_type(template, limit, offset)
+        data = GameResource.find_by_template(template, limit, offset)
         links = handle_links(request.url, offset, limit)
         res ={"data":data,"links":links}
         if (data):
@@ -178,12 +180,12 @@ def get_game_by_type(type):
 def get_game_by_dev(dev):
     if request.method == 'GET':
         print(dev)
-        template = dev
+        template = {'DEVELOPER':dev}
         offset = int(request.args.get("offset", OFFSET))
         limit = int(request.args.get("limit", MAXLIMIT))
         if limit > MAXLIMIT:
             limit = MAXLIMIT
-        data = GameResource.find_by_dev(template, limit, offset)
+        data = GameResource.find_by_template(template, limit, offset)
         links = handle_links(request.url, offset, limit)
         res ={"data":data,"links":links}
         if (data):
