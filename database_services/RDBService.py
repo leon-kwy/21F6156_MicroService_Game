@@ -18,8 +18,6 @@ from botocore.exceptions import ClientError
 # logger = logging.getLogger()
 # logger.setLevel(logging.INFO)
 
-aws_access_key_id = 'AKIATDPZNBACAS7FZREM'
-aws_secret_access_key = '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'
 
 dynamodb = boto3.resource(
     service_name='dynamodb',
@@ -103,62 +101,13 @@ class RDBService:
 
     #     return clause, args
 
-    # @classmethod
-    # def find_by_type(cls, db_schema, table_name, template, limit, offset):
-
-    #     conn = RDBService._get_db_connection()
-    #     cur = conn.cursor()
-    #     sql = "select * from " + db_schema + "." + table_name +  " where " + \
-    #         "type1 = '{0}' or type2 = '{0}' or type3 = '{0}' or type4 = '{0}' or type5 = '{0}'".format(template)\
-    #              + " " + "limit " + str(limit) + " " + "offset " + str(offset)
-    #     print(sql)
-    #     res = cur.execute(sql)
-    #     res = cur.fetchall()
-    #     conn.close()
-
-    #     return res
-
-
-    # @classmethod
-    # def find_by_dev(cls, db_schema, table_name, template, limit, offset):
-
-    #     conn = RDBService._get_db_connection()
-    #     cur = conn.cursor()
-    #     sql = "select * from " + db_schema + "." + table_name + " where " + \
-    #           "developer = '{0}'".format(template) + " " + "limit " + str(limit) \
-    #               + " " + "offset " + str(offset)
-    #     print(sql)
-    #     res = cur.execute(sql)
-    #     res = cur.fetchall()
-    #     conn.close()
-
-    #     return res
-
     @classmethod
     def find_by_template(cls, template, limit, offset):
-
-        # wc,args = RDBService._get_where_clause_args(template)
-
-        # conn = RDBService._get_db_connection()
-        # cur = conn.cursor()
-
-        # sql = "select * from " + db_schema + "." + table_name + " " + wc + " " + \
-        #     "limit " + str(limit) + " " + "offset " + str(offset)
-        # res = cur.execute(sql, args=args)
-        # res = cur.fetchall()
-
-        # conn.close()
-
-        # return res
         res = []
         try:
             if template is None:
                 res = table.scan()['Items']
             else:
-                # response = table.scan(
-                #     FilterExpression=And(*[(Key(key).eq(value)) for key, value in template.items()])
-                # )
-
                 for k,v in template.items():
                     if k == 'id':
                         response = table.scan(
@@ -177,8 +126,6 @@ class RDBService:
                         response = table.scan(
                             FilterExpression=Attr(k).eq(v)
                         )
-                    # print(type(v),v)
-                    # print(response)
                     res += response['Items']
         except ClientError as e:
             raise
@@ -188,24 +135,6 @@ class RDBService:
 
     @classmethod
     def create(cls, db_schema, table_name, create_data):
-
-        # cols = []
-        # vals = []
-        # args = []
-
-        # for k,v in create_data.items():
-        #     cols.append(k)
-        #     vals.append('%s')
-        #     args.append(v)
-
-        # cols_clause = "(" + ",".join(cols) + ")"
-        # vals_clause = "values (" + ",".join(vals) + ")"
-
-        # sql_stmt = "insert into " + db_schema + "." + table_name + " " + cols_clause + \
-        #     " " + vals_clause
-
-        # res = RDBService.run_sql(sql_stmt, args)
-        # return res
         item = create_data
         item['version'] = 0
         try:
@@ -285,6 +214,7 @@ class RDBService:
         # return res
 
         try:
+            print(template)
             response = table.delete_item(
                 Key=template,
             )

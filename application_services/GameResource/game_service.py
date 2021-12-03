@@ -31,14 +31,3 @@ class GameResource(BaseRDBApplicationResource):
     def delete(cls, template):
         res = RDBService.delete("GameInfo", "Game", template)
         return res
-
-    @classmethod
-    def find_by_type(cls, template, limit, offset):
-        res = RDBService.find_by_type("GameInfo", "Game", template, limit, offset)
-        return res
-
-    @classmethod
-    def find_by_dev(cls, template, limit, offset):
-        res = RDBService.find_by_dev("GameInfo", "Game", template, limit, offset)
-        return res
-
