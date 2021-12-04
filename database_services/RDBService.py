@@ -9,7 +9,6 @@ import boto3
 import json
 import decimal
 import time
-
 import botocore
 from boto3.dynamodb.conditions import Key, Attr, And
 from botocore.exceptions import ClientError
