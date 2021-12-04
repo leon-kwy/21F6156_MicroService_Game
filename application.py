@@ -67,14 +67,17 @@ def get_game():
             return resp
     if request.method == 'POST':
         id = int(time.time())
-        game_name = request.form['name']
-        type = request.form['type']
-        dev = request.form['dev']
+        game_name = request.form['Game_name']
+        type = request.form['G_Type']
+        type = type.split(',')
+
+        dev = request.form['DEVELOPER']
         if len(game_name) != 0 and len(type) and len(dev) != 0:
             create_data = {
                 "id": id,
                 "Game_name": game_name,
                 "G_Type": type,
+                "insertedAtTimestamp": time.asctime(time.localtime(time.time())),
                 "DEVELOPER": dev
             }
             res = GameResource.create(create_data)
@@ -139,8 +142,7 @@ def get_game_by_name(name):
         template = {"Game_name": name}
         offset = int(request.args.get("offset", OFFSET))
         limit = int(request.args.get("limit", MAXLIMIT))
-        ID = GameResource.find_by_template(template,limit, offset)[0]['id']
-        print(ID)
+        ID = GameResource.find_by_template(template, limit, offset)[0]['id']
         template = {'id': ID}
         res = GameResource.delete(template)
         if (res):
@@ -153,7 +155,51 @@ def get_game_by_name(name):
             return resp
 
 
-@application.route('/Game/type/<type>', methods=['GET'])
+@application.route('/Game/addType', methods=['POST'])
+def update_game_type():
+    if request.method == 'POST':
+        offset = int(request.args.get("offset", OFFSET))
+        limit = int(request.args.get("limit", MAXLIMIT))
+
+        game_name = request.form['Game_name']
+        type = request.form['G_Type'].split(',')
+        template = {'Game_name': game_name}
+        ID = GameResource.find_by_template(template, limit, offset)[0]['id']
+
+        if len(game_name) != 0 and len(type) != 0:
+            resp = GameResource.insert({'id': ID}, type)
+            return resp
+
+
+@application.route('/Game/updateGame', methods=['POST'])
+def update_game():
+    if request.method == 'POST':
+        offset = int(request.args.get("offset", OFFSET))
+        limit = int(request.args.get("limit", MAXLIMIT))
+
+        game_name = request.form['Game_name']
+        game_info = RDBService.find_by_template({'Game_name': game_name}, limit, offset)
+
+        ID = game_info[0]['id']
+        select_data = {
+            "Game_name": game_name,
+            "G_Type": game_info[0]['G_Type'],
+            "DEVELOPER": game_info[0]['DEVELOPER'],
+            "version": game_info[0]['version'],
+            "insertedAtTimestamp": game_info[0]['insertedAtTimestamp']
+        }
+        update_data = select_data
+        update_data['insertedAtTimestamp'] = time.asctime(time.localtime(time.time()))
+        for k,v in request.form.items():
+            update_data[k] = v
+
+        if len(game_name) != 0:
+            resp = GameResource.update(ID, update_data)
+            resp = Response(json.dumps(resp, default=str), status=201, content_type="application/json")
+            return resp
+
+
+@application.route('/Game/type/<type>', methods=['GET', 'POST'])
 def get_game_by_type(type):
     if request.method == 'GET':
         Type = []

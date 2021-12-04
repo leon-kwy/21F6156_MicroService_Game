@@ -15,6 +15,7 @@ from boto3.dynamodb.conditions import Key, Attr, And
 from botocore.exceptions import ClientError
 
 
+
 dynamodb = boto3.resource(
     service_name='dynamodb',
     region_name='us-east-2',
@@ -27,75 +28,6 @@ class RDBService:
 
     def __init__(self):
         pass
-
-    # @classmethod
-    # def _get_db_connection(cls):
-
-        # db_connect_info = context.get_db_info()
-        #
-        # logger.info("RDBService._get_db_connection:")
-        # logger.info("\t HOST = " + db_connect_info['host'])
-        #
-        # db_info = context.get_db_info()
-        #
-        # db_connection = pymysql.connect(
-        #    **db_info,
-        #     autocommit=True
-        # )
-        # return db_connection
-
-    # @classmethod
-    # def run_sql(cls, sql_statement, args, fetch=False):
-
-    #     conn = RDBService._get_db_connection()
-
-    #     try:
-    #         cur = conn.cursor()
-    #         res = cur.execute(sql_statement, args=args)
-    #         if fetch:
-    #             res = cur.fetchall()
-    #     except Exception as e:
-    #         conn.close()
-    #         raise e
-
-    #     return res
-
-    # @classmethod
-    # def get_by_prefix(cls, db_schema, table_name, column_name, value_prefix):
-
-    #     conn = RDBService._get_db_connection()
-    #     cur = conn.cursor()
-
-    #     sql = "select * from " + db_schema + "." + table_name + " where " + \
-    #         column_name + " like " + "'" + value_prefix + "%'"
-    #     print("SQL Statement = " + cur.mogrify(sql, None))
-
-    #     res = cur.execute(sql)
-    #     res = cur.fetchall()
-
-    #     conn.close()
-
-    #     return res
-
-    # @classmethod
-    # def _get_where_clause_args(cls, template):
-
-    #     terms = []
-    #     args = []
-    #     clause = None
-
-    #     if template is None or template == {}:
-    #         clause = ""
-    #         args = None
-    #     else:
-    #         for k,v in template.items():
-    #             terms.append(k + "=%s")
-    #             args.append(v)
-
-    #         clause = " where " +  " AND ".join(terms)
-
-
-    #     return clause, args
 
     @classmethod
     def find_by_template(cls, template, limit, offset):
@@ -130,7 +62,7 @@ class RDBService:
 
 
     @classmethod
-    def create(cls, db_schema, table_name, create_data):
+    def create(cls, create_data):
         item = create_data
         item['version'] = 0
         try:
@@ -143,27 +75,9 @@ class RDBService:
 
 
     @classmethod
-    def update(cls, db_schema, table_name, select_data, update_data):
+    def update(cls, ID, update_data):
 
-        # select_clause, select_args = RDBService._get_where_clause_args(select_data)
-
-        # cols = []
-        # args = []
-
-        # for k, v in update_data.items():
-        #     cols.append(k + "=%s")
-        #     args.append(v)
-        # clause = "set " + ", ".join(cols)
-        # args = args + select_args
-
-        # sql_stmt = "update " + db_schema + "." + table_name + " " + clause + \
-        #            " " + select_clause
-
-        # res = RDBService.run_sql(sql_stmt, args)
-        # return res
-
-        item = update_data
-        item["version"] += 1
+        update_data["version"] += 1
         keys = list(update_data.keys())
         values = list(update_data.values())
         attrs = [':a', ':b', ':c', ':d', ':e']
@@ -176,7 +90,7 @@ class RDBService:
             expression_attr[attrs[i]] = values[i]
         try:
             response = table.update_item(
-                Key=select_data,
+                Key={'id': ID},
                 UpdateExpression=set_clause,
                 ExpressionAttributeValues=expression_attr,
                 ReturnValues="UPDATED_NEW"
@@ -187,9 +101,7 @@ class RDBService:
             return response['Attributes']
     
     @classmethod
-    def insert(cls, db_schema, table_name, select_data, update_data):
-        item = update_data
-        item["version"] += 1
+    def insert(cls,  select_data, update_data):
         try:
             response = table.update_item(
                 Key=select_data,
@@ -203,14 +115,8 @@ class RDBService:
             return response['Attributes']
 
     @classmethod
-    def delete(cls, db_schema, table_name, template):
-        # clause, args = RDBService._get_where_clause_args(template)
-        # sql_stmt = "delete from " + db_schema + "." + table_name + " " + clause
-        # res = RDBService.run_sql(sql_stmt, args)
-        # return res
-
+    def delete(cls, template):
         try:
-            print(template)
             response = table.delete_item(
                 Key=template,
             )

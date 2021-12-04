@@ -23,8 +23,13 @@ class GameResource(BaseRDBApplicationResource):
         return res
 
     @classmethod
-    def update(cls, select_data, update_data):
-        res = RDBService.update("GameInfo", "Game", select_data, update_data)
+    def update(cls, ID, update_data):
+        res = RDBService.update( ID, update_data)
+        return res
+
+    @classmethod
+    def insert(cls, select_data, update_data):
+        res = RDBService.insert(select_data, update_data)
         return res
 
     @classmethod
