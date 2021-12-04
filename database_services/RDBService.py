@@ -15,7 +15,6 @@ from boto3.dynamodb.conditions import Key, Attr, And
 from botocore.exceptions import ClientError
 
 
-
 dynamodb = boto3.resource(
     service_name='dynamodb',
     region_name='us-east-2',
@@ -77,6 +76,7 @@ class RDBService:
     @classmethod
     def update(cls, ID, update_data):
 
+        current_version = update_data['version']
         update_data["version"] += 1
         keys = list(update_data.keys())
         values = list(update_data.values())
@@ -93,6 +93,7 @@ class RDBService:
                 Key={'id': ID},
                 UpdateExpression=set_clause,
                 ExpressionAttributeValues=expression_attr,
+                ConditionExpression=Attr('version').eq(current_version),
                 ReturnValues="UPDATED_NEW"
             )
         except ClientError as e:
