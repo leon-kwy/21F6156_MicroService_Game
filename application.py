@@ -199,7 +199,7 @@ def update_game():
             return resp
 
 
-@application.route('/Game/type/<type>', methods=['GET', 'POST'])
+@application.route('/Game/type/<type>', methods=['GET'])
 def get_game_by_type(type):
     if request.method == 'GET':
         Type = []
