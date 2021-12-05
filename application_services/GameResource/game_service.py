@@ -14,31 +14,25 @@ class GameResource(BaseRDBApplicationResource):
 
     @classmethod
     def find_by_template(cls, template, limit, offset):
-        res = RDBService.find_by_template("GameInfo", "Game", template, limit, offset)
+        res = RDBService.find_by_template(template, limit, offset)
         return res
 
     @classmethod
     def create(cls, create_data):
-        res = RDBService.create("GameInfo", "Game", create_data)
+        res = RDBService.create(create_data)
         return res
 
     @classmethod
-    def update(cls, select_data, update_data):
-        res = RDBService.update("GameInfo", "Game", select_data, update_data)
+    def update(cls, ID, update_data):
+        res = RDBService.update( ID, update_data)
+        return res
+
+    @classmethod
+    def insert(cls, select_data, update_data):
+        res = RDBService.insert(select_data, update_data)
         return res
 
     @classmethod
     def delete(cls, template):
         res = RDBService.delete("GameInfo", "Game", template)
         return res
-
-    @classmethod
-    def find_by_type(cls, template, limit, offset):
-        res = RDBService.find_by_type("GameInfo", "Game", template, limit, offset)
-        return res
-
-    @classmethod
-    def find_by_dev(cls, template, limit, offset):
-        res = RDBService.find_by_dev("GameInfo", "Game", template, limit, offset)
-        return res
-
