@@ -17,7 +17,7 @@ logger.setLevel(logging.INFO)
 
 # pagination data
 OFFSET = 0
-MAXLIMIT = 2
+MAXLIMIT = 20
 
 
 # help function for pagination
