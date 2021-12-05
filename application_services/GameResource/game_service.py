@@ -19,7 +19,7 @@ class GameResource(BaseRDBApplicationResource):
 
     @classmethod
     def create(cls, create_data):
-        res = RDBService.create("GameInfo", "Game", create_data)
+        res = RDBService.create(create_data)
         return res
 
     @classmethod

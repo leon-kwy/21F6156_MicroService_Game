@@ -9,6 +9,7 @@ import boto3
 import json
 import decimal
 import time
+import os
 
 import botocore
 from boto3.dynamodb.conditions import Key, Attr, And
@@ -19,8 +20,8 @@ from botocore.exceptions import ClientError
 dynamodb = boto3.resource(
     service_name='dynamodb',
     region_name='us-east-2',
-    aws_access_key_id=aws_access_key_id,
-    aws_secret_access_key=aws_secret_access_key
+    aws_access_key_id=os.environ['aws_access_key_id'],
+    aws_secret_access_key=os.environ['aws_secret_access_key']
 )
 table = dynamodb.Table('6156_game')
 
@@ -52,9 +53,26 @@ class RDBService:
                             )
                     else:
                         response = table.scan(
-                            FilterExpression=Attr(k).eq(v)
+                            FilterExpression=Attr(k).contains(v)
                         )
                     res += response['Items']
+            if offset < len(res):
+                # if offset == 0:
+                #     res = table.scan(
+                #         Limit=limit
+                #     )['Items']
+                # else:
+                #     res = table.scan(
+                #         ExclusiveStartKey={'id': res[offset-1]["id"]},
+                #         Limit=limit
+                #     )['Items']
+                if offset + limit <= len(res):
+                    res = res[offset:offset + limit]
+                else:
+                    res = res[offset:]
+            else:
+                res = []
+
         except ClientError as e:
             raise
         else:
