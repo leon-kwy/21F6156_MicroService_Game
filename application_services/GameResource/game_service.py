@@ -34,5 +34,5 @@ class GameResource(BaseRDBApplicationResource):
 
     @classmethod
     def delete(cls, template):
-        res = RDBService.delete("GameInfo", "Game", template)
+        res = RDBService.delete(template)
         return res
